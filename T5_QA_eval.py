@@ -1,7 +1,7 @@
 ## SQuAD evaluation script. Modifed slightly for this notebook
-
+from data_classes import ModelArguments
 from transformers import HfArgumentParser
-parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+parser = HfArgumentParser(ModelArguments)
 
 
 # Ben
@@ -12,6 +12,7 @@ import re
 import argparse
 import json
 import sys
+import os
 
 
 def normalize_answer(s):
@@ -86,14 +87,16 @@ from tqdm.auto import tqdm
 # tokenizer = T5Tokenizer.from_pretrained('models/tpu')
 
 
-model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath('args.json'))
+model_args,  = parser.parse_json_file(json_file=os.path.abspath('args.json'))
+print(model_args)
+print(model_args.model_name_or_path)
 
 
 # BEN
 # model = T5ForConditionalGeneration.from_pretrained('models/tpu').to('cpu') # because its loaded on xla by default
 # tokenizer = T5Tokenizer.from_pretrained('models/tpu')
-model = T5ForConditionalGeneration.from_pretrained("t5-large")
-tokenizer = T5Tokenizer.from_pretrained("t5-large")
+model = T5ForConditionalGeneration.from_pretrained(model_args.model_name_or_path)
+tokenizer = T5Tokenizer.from_pretrained(model_args.model_name_or_path)
 
 valid_dataset = torch.load('valid_data.pt')
 dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=2)
