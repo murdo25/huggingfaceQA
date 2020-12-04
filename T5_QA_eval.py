@@ -1,3 +1,5 @@
+# F1: https://en.wikipedia.org/wiki/F-score
+
 ## SQuAD evaluation script. Modifed slightly for this notebook
 from data_classes import ModelArguments
 from transformers import HfArgumentParser
@@ -105,15 +107,17 @@ dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=2)
 
 
 answers = []
+i=0
 for batch in tqdm(dataloader):
-  print("batch", type(batch))
+  i += 1
   outs = model.generate(input_ids=batch['input_ids'], 
                         attention_mask=batch['attention_mask'],
                         max_length=16,
                         early_stopping=True)
   outs = [tokenizer.decode(ids) for ids in outs]
   answers.extend(outs)
-  break
+  if(i > 100):
+      break
 
 predictions = []
 references = []
@@ -122,20 +126,39 @@ def clean(result):
     result = result.replace("<pad>","")
     result = result.replace("</s>", "")
     result = result.strip()
+    result = result.lower()
     return result
 
 
-result = tokenizer.decode(valid_dataset[0]['target_ids'])
-print("target:", clean(answers[0]), "output:", clean(result))
-if(clean(answers[0]) == clean(result)):
-    print("worked")
+# result = tokenizer.decode(valid_dataset[0]['target_ids'])
+# print("target:", clean(answers[0]), "output:", clean(result))
+# if(clean(answers[0]) == clean(result)):
+#     print("worked")
+
+print("valid:", len(valid_dataset))
+print("targets:", len(answers))
+
+
+num_examples = 0
+num_correct = 0
+for ref, pred in zip(valid_dataset, answers):
+  num_examples += 1
+  result = tokenizer.decode(ref['target_ids'])
+  if(clean(result) == clean(pred)):
+      num_correct += 1
+  else:
+      print("\n", normalize_answer(clean(result)), "|", normalize_answer(clean(pred)))
+
+print("num_correct:", num_correct,"num_examples:", num_examples, "acc:", num_correct/num_examples)
+
 
 # for ref, pred in zip(valid_dataset, answers):
-#   print("ref", ref)
-#   print("ref.keys()", ref.keys())
+#   result = tokenizer.decode(ref['target_ids'])
+#   print('result:', clean(result))
+#   print('perdit:', clean(pred))
 #   predictions.append(pred)
-#   references.append(ref['answers']['text'])
-#   break
+# #   references.append(ref['answers']['text'])
+#   references.append(result)
 
 # print(predictions[0], references[0])
 
@@ -143,5 +166,5 @@ if(clean(answers[0]) == clean(result)):
 # evaluate(references, predictions)
 # evaluate(references, predictions)
 # print("eval:", evaluate(references, predictions))
-print("eval:", evaluate(answers[0], clean(result)))
+# print("eval:", evaluate(answers[0], clean(result)))
 print("finished!")
