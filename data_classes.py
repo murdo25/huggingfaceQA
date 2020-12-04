@@ -13,12 +13,8 @@ from transformers import DataCollator
 # prepares lm_labels from target_ids, returns examples with keys as expected by the forward method
 # this is necessacry because the trainer directly passes this dict as arguments to the model
 # so make sure the keys match the parameter names of the forward method
-# Ben
 @dataclass
-# class T2TDataCollator(DataCollator):
 class T2TDataCollator:
-    # def collate_batch(self, batch: List) -> Dict[str, torch.Tensor]:
-    # def __call__(self, batch: List) -> Dict[str, torch.Tensor]:
     def __call__(self, batch):
         """
         Take a list of samples from a Dataset and collate them into a batch.
