@@ -156,11 +156,6 @@ def main():
     # we will load the arguments from a json file, 
     #make sure you save the arguments in at ./args.json
     model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath('args.json'))
-    print("\n\n")
-    print("model args:", model_args)
-    print("data args:", data_args)
-    print("training args:", training_args)
-    print("\n\n")
 
     if (
         os.path.exists(training_args.output_dir)
@@ -201,16 +196,15 @@ def main():
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
     )
+
     model = T5ForConditionalGeneration.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
     )
 
     # Get datasets
-    print('loading data')
     train_dataset  = torch.load(data_args.train_file_path)
     valid_dataset = torch.load(data_args.valid_file_path)
-    print('loading done')
 
     # Initialize our Trainer
     trainer = Trainer(
@@ -221,6 +215,10 @@ def main():
         data_collator=T2TDataCollator(),
         # prediction_loss_only=True
     )
+    print("attempting to train")
+    trainer.train()
+    print("finished training")
+    exit()
 
     # Training
     if training_args.do_train:
@@ -257,10 +255,11 @@ import json
 
 """Let's write the arguments in a dict and store in a json file. The above code will load this file and parse the arguments."""
 
+#   "model_name_or_path": 't5-base',
 args_dict = {
   "num_cores": 8,
   'training_script': 'train_t5_squad.py',
-  "model_name_or_path": 't5-base',
+  "model_name_or_path": 't5-small',
   "max_len": 512 ,
   "target_max_len": 16,
   "output_dir": './models/gpu',

@@ -18,7 +18,8 @@ from transformers import DataCollator
 # class T2TDataCollator(DataCollator):
 class T2TDataCollator:
     # def collate_batch(self, batch: List) -> Dict[str, torch.Tensor]:
-    def __call__(self, batch: List) -> Dict[str, torch.Tensor]:
+    # def __call__(self, batch: List) -> Dict[str, torch.Tensor]:
+    def __call__(self, batch):
         """
         Take a list of samples from a Dataset and collate them into a batch.
         Returns:
@@ -34,7 +35,7 @@ class T2TDataCollator:
         return {
             'input_ids': input_ids, 
             'attention_mask': attention_mask,
-            'lm_labels': lm_labels, 
+            'labels': lm_labels, 
             'decoder_attention_mask': decoder_attention_mask
         }
 
