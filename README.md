@@ -1,4 +1,4 @@
-# huggingfaceQA
+# SQUAD using huggingface T5
 Wikipedia question answering problem
 The Stanford Question Answering Dataset
 T5 using huggingface transformers 4.0 on Squad
