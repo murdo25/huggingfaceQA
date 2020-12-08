@@ -1,4 +1,4 @@
-# SQUAD using huggingface T5
+# SQuAD using huggingface T5
 
 training on the Stanford Question Answering Dataset
 
